@@ -1,70 +1,78 @@
-import { SymbolView } from 'expo-symbols';
-import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
+import { useAnimatedTheme } from "@/hooks/useAnimateTheme";
+import { useTheme } from "@/providers/ThemeContextProvider";
+import { useAuth } from "@clerk/expo";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Redirect, Tabs, useRouter } from "expo-router";
+import { Animated } from "react-native";
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+const TabsLayout = () => {
+  const { isSignedIn } = useAuth();
+  const { theme } = useTheme();
+  const { colors } = useAnimatedTheme();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const {} = useRouter();
+
+  if (!isSignedIn) {
+    return <Redirect href={"/(auth)/login"} />;
+  }
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+        headerShown: false,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
+        tabBarBackground: () => (
+          <Animated.View style={{
+            flex: 1,
+            backgroundColor: colors.surface,
+          }} />
+        ),
+        tabBarStyle: {
+          borderTopColor: theme.colors.border,
+          borderTopWidth: 0.5,
+        },
+        headerBackground: () => (
+          <Animated.View style={{
+            flex: 1,
+            backgroundColor: colors.surface,
+            borderBottomWidth: 0.5,
+            borderBottomColor: theme.colors.border,
+          }} />
+        ),
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="worksheet"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
+          title: "Worksheet",
+          tabBarIcon: ({ color, size }) => <Ionicons name="clipboard-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: "History",
+          tabBarIcon: ({ color, size }) => <Ionicons name="time-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;

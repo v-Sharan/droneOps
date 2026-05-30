@@ -3,5 +3,16 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+  "vscode-color-picker.languages": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "postcss",
+    "xml",
+    "html",
+    "json"
+  ],
+  "cmake.sourceDirectory": "F:/applications/droneops/node_modules/react-native/ReactCommon/jsiexecutor"
 }
