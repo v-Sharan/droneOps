@@ -63,8 +63,6 @@ export default function SettingsScreen() {
         <View style={{
           borderRadius: radii.lg, padding: spacing.md,
           borderWidth: 1,
-        //   borderColor: colors.border,
-
         }}>
           {[
             ['mode',     mode],
@@ -76,8 +74,6 @@ export default function SettingsScreen() {
               justifyContent: 'space-between',
               paddingVertical: 6,
               borderBottomWidth: 0.5,
-            //   borderBottomColor: colors.border,
-
             }}>
               <Animated.Text style={{ color: colors.textSecondary }}>{k}</Animated.Text>
               <Animated.Text style={{ color: colors.text }}>{v}</Animated.Text>

@@ -4,9 +4,7 @@ import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 export const createUsers = mutation({
   args: {
     username: v.string(),
-    fullname: v.string(),
     email: v.string(),
-    bio: v.optional(v.string()),
     image: v.string(),
     clerkId: v.string(),
   },
@@ -21,11 +19,12 @@ export const createUsers = mutation({
     await ctx.db.insert("users", {
       clerkId: args.clerkId,
       email: args.email,
-      name: args.fullname,
+      name: args.username,
       avatarUrl: args.image,
       role: "employee",
       isActive: true,
       joinedAt: Date.now(),
+      employeeId: `EMP${Math.floor(10000 + Math.random() * 90000)}`,
     });
   },
 });
@@ -39,6 +38,7 @@ export const getUserByClerkId = query({
       .query("users")
       .withIndex("by_clerk", (q) => q.eq("clerkId", args.clerkId))
       .unique();
+    if (!user) throw new Error("User not found");
 
     return user;
   },
@@ -46,6 +46,7 @@ export const getUserByClerkId = query({
 
 export const getAuthendicatedUser = async (ctx: QueryCtx | MutationCtx) => {
   const identity = await ctx.auth.getUserIdentity();
+  console.log("Authenticated user identity:", identity);
   if (!identity) throw new Error("Unauthorized");
 
   const currentUser = await ctx.db

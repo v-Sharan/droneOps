@@ -13,11 +13,13 @@ export default defineSchema({
       v.literal("dept_head"),
       v.literal("employee"),
     ),
+    employeeId: v.string(), // for display, not auth
     departmentId: v.optional(v.id("departments")),
     reportingTo: v.optional(v.id("users")), // dept head's ID
     isActive: v.boolean(),
     joinedAt: v.number(), // timestamp
     expoPushToken: v.optional(v.string()), // for mobile push
+    worksheets: v.optional(v.array(v.id("worksheets"))), // for quick access to user's sheets
   })
     .index("by_clerk", ["clerkId"])
     .index("by_department", ["departmentId"]),
@@ -26,8 +28,7 @@ export default defineSchema({
     name: v.string(), // "Flight Ops", "Engineering"
     headId: v.optional(v.id("users")),
     description: v.optional(v.string()),
-    droneFleetIds: v.optional(v.array(v.string())), // drone company context
-    createdAt: v.number(),
+    createdAt: v.string(),
   }),
 
   attendance: defineTable({
@@ -145,4 +146,24 @@ export default defineSchema({
     expiresAt: v.optional(v.number()),
     createdAt: v.number(),
   }),
+
+  worksheets: defineTable({
+    userId: v.id("users"),
+    date: v.string(),
+    tasks: v.string(),
+    siteLocation: v.string(),
+    hoursWorked: v.number(),
+    status: v.union(
+      v.literal("draft"),
+      v.literal("submitted"),
+      v.literal("reviewed"),
+    ),
+    reviewedBy: v.optional(v.id("users")),
+    reviewedAt: v.optional(v.number()),
+    submittedAt: v.optional(v.number()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_date", ["date"])
+    .index("by_user_date", ["userId", "date"])
+    .index("by_status", ["status"]),
 });

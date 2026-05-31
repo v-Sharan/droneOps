@@ -33,8 +33,6 @@ const InitialLayout = () => {
     if (isLoaded) await SplashScreen.hideAsync();
   }, [isLoaded, isSignedIn]);
 
-  console.log("InitialLayout rendered with theme:", resolved);
-
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1,backgroundColor: theme.colors.background }} onLayout={onLayoutRootView}>

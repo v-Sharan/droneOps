@@ -1,19 +1,22 @@
-// CustomView.tsx
-
 import { useAnimatedTheme } from "@/hooks/useAnimateTheme";
 import React from "react";
 import { Animated } from "react-native";
 
-const View: React.FC<React.ComponentProps<typeof Animated.View>> = ({
+interface ViewProps extends React.ComponentProps<typeof Animated.View> {
+  backgroundColor?: Animated.AnimatedInterpolation<string | number>;
+}
+
+const View: React.FC<ViewProps> = ({
   children,
   style,
+  backgroundColor,
   ...rest
 }) => {
 
   const {colors} = useAnimatedTheme();
 
   return (
-    <Animated.View style={[{ backgroundColor:colors.surface }, style]} {...rest}>
+      <Animated.View style={[{ backgroundColor: backgroundColor || colors.background }, style]} {...rest}>
       {children}
     </Animated.View>
   );
