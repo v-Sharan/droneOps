@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { getAuthendicatedUser } from "./user";
 
 export const getByUserAndDate = query({
   args: { userId: v.id("users"), date: v.string() },
@@ -14,11 +15,13 @@ export const getByUserAndDate = query({
 });
 
 export const getByUser = query({
-  args: { id: v.id("users") },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
+    const user = await getAuthendicatedUser(ctx);
+
     return await ctx.db
       .query("worksheets")
-      .withIndex("by_user", (q) => q.eq("userId", args.id))
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
       .order("desc")
       .take(30);
   },

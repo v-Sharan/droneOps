@@ -3,22 +3,21 @@ import { Text, View } from "@/components/Themed";
 import { api } from "@/convex/_generated/api";
 import { useAnimatedTheme } from "@/hooks/useAnimateTheme";
 import { useTheme } from "@/providers/ThemeContextProvider";
-import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
 import {
-    Alert, KeyboardAvoidingView, Platform,
-    ScrollView,
-    StyleSheet,
-    TextInput,
+  Alert, KeyboardAvoidingView, Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WorksheetScreen() {
-  const { user : clerk_user } = useUser();
 
-  const user = useQuery(api.user.getUserByClerkId, clerk_user ? { clerkId: clerk_user?.id! } : "skip");
+
+  const user = useQuery(api.user.getCurrentUser);
   const today = new Date().toISOString().split("T")[0];
 
   const existing = useQuery(
@@ -139,7 +138,7 @@ export default function WorksheetScreen() {
           )}
 
           <Card style={styles.card}>
-            <View style={styles.fieldGroup}>
+            <View style={styles.fieldGroup} backgroundColor={Colors.surface}>
                 <Text style={[styles.fieldLabel,{color: Colors.textSoft}]}>Tasks completed today *</Text>
                 <TextInput
                 style={[styles.textarea,{borderColor: theme.colors.border, borderRadius: theme.radii.md,color: theme.colors.text, backgroundColor: theme.colors.surfaceRaised}, errors.tasks ? {borderColor: theme.colors.error} : null, isReadOnly && {backgroundColor: theme.colors.background, color: theme.colors.textSoft}]}
@@ -155,7 +154,7 @@ export default function WorksheetScreen() {
               {errors.tasks && <Text style={[styles.err,{color: Colors.error}]}>{errors.tasks}</Text>}
             </View>
 
-            <View style={styles.row}>
+            <View style={styles.row} backgroundColor={Colors.surface}>
               <View style={{ flex: 1 }}>
                 <Input
                   label="Site / Location *"
@@ -167,7 +166,7 @@ export default function WorksheetScreen() {
                   containerStyle={{ marginBottom: 0 }}
                 />
               </View>
-              <View style={{ width: 110 }}>
+              <View style={{ width: 110 }} backgroundColor={Colors.surface}>
                 <Input
                   label="Hours worked *"
                   value={hours}

@@ -17,11 +17,9 @@ if (!publishableKey) {
 const ClerkAndConvexProvider = ({ children }: PropsWithChildren) => {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          {children}
-        </ConvexProviderWithClerk>
-      </ClerkLoaded>
+      <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+        <ClerkLoaded>{children}</ClerkLoaded>
+      </ConvexProviderWithClerk>
     </ClerkProvider>
   );
 };

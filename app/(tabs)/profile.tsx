@@ -3,7 +3,7 @@ import { Text, View } from "@/components/Themed";
 import { api } from "@/convex/_generated/api";
 import { useAnimatedTheme } from "@/hooks/useAnimateTheme";
 import { useTheme } from "@/providers/ThemeContextProvider";
-import { useClerk, useUser } from "@clerk/expo";
+import { useClerk } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import {
@@ -17,8 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { signOut } = useClerk();
-  const { user : clerk_user } = useUser();
-  const user = useQuery(api.user.getUserByClerkId, clerk_user ? { clerkId: clerk_user?.id! } : "skip");
+  const user = useQuery(api.user.getCurrentUser);
   const department = useQuery(api.departments.getDepartmentById, user ? { id: user.departmentId! } : "skip");
   const sheets = useQuery(api.worksheets.getByUser,"skip");
 
@@ -36,13 +35,10 @@ export default function ProfileScreen() {
     ]);
   };
 
-  const initials = (user?.name ?? "U")
-    .split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
-
   const roleLabel: Record<string, string> = {
-    employee: "Employee",
-    hr: "HR Team",
-    admin: "Administrator",
+    hr_admin: "HR Admin",
+    dept_head: "Department Head",
+    employee: "Employee"
   };
 
   return (
@@ -54,7 +50,7 @@ export default function ProfileScreen() {
           {/* <View style={[styles.avatar,{backgroundColor: Colors.primary}]}> */}
             {/* <Text style={styles.avatarText}>{initials}</Text> */}
           {/* </View> */}
-          <Image source={{uri: clerk_user?.imageUrl }} style={styles.avatar}/>
+          <Image source={{uri: user?.avatarUrl }} style={styles.avatar}/>
           <Text style={[styles.name,{color: Colors.text}]}>{user?.name}</Text>
           <View style={[styles.rolePill,{backgroundColor: Colors.surface, borderRadius: radii.sm}]}>
             <Text style={[styles.roleText,{color: Colors.text}]}>{roleLabel[user?.role ?? "employee"]}</Text>
@@ -65,17 +61,17 @@ export default function ProfileScreen() {
         {/* Stats */}
         <Card style={styles.statsCard}>
           <View style={styles.statsRow}>
-            <View style={styles.stat}>
+            <View style={styles.stat} backgroundColor={Colors.surface}>
               <Text style={[styles.statVal,{color: Colors.text}]}>{sheets?.length ?? 0}</Text>
               <Text style={[styles.statLabel,{color: Colors.textSoft}]}>Total sheets</Text>
             </View>
             <View style={[styles.statDiv,{backgroundColor: Colors.border}]} />
-            <View style={styles.stat}>
+            <View style={styles.stat} backgroundColor={Colors.surface}>
               <Text style={[styles.statVal,{color: Colors.text}]}>{reviewed}</Text>
               <Text style={[styles.statLabel,{color: Colors.textSoft}]}>Reviewed</Text>
             </View>
             <View style={[styles.statDiv,{backgroundColor: Colors.border}]} />
-            <View style={styles.stat}>
+            <View style={styles.stat} backgroundColor={Colors.surface}>
               <Text style={[styles.statVal,{color: Colors.text}]}>{Math.round(totalHours)}</Text>
               <Text style={[styles.statLabel,{color: Colors.textSoft}]}>Total hours</Text>
             </View>
@@ -88,7 +84,7 @@ export default function ProfileScreen() {
           <InfoRow icon="mail-outline" label="Email" value={user?.email ?? "—"} color={theme.colors.textSoft} border={theme.colors.border} />
           <InfoRow icon="card-outline" label="Employee ID" value={user?.employeeId ?? "—"} color={theme.colors.textSoft} border={theme.colors.border} />
           <InfoRow icon="business-outline" label="Department" value={department?.name ?? "—"} color={theme.colors.textSoft} border={theme.colors.border} />
-          <InfoRow icon="shield-outline" label="Role" value={roleLabel[user?.role ?? "employee"]} color={theme.colors.textSoft} border={theme.colors.border} last />
+          <InfoRow icon="shield-outline" label="Role" value={roleLabel[user?.role ?? "employee"]} color={theme.colors.textSoft} border={theme.colors.border} last/>
         </Card>
 
         {/* Actions */}
@@ -105,7 +101,7 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
           </TouchableOpacity> */}
           <TouchableOpacity style={[styles.actionRow,{borderBottomColor: theme.colors.border}, styles.lastRow]} onPress={handleLogout}>
-            <View style={[styles.iconWrap, { backgroundColor: Colors.error }]}>
+            <View style={[styles.iconWrap]}>
               <Ionicons name="log-out-outline" size={18} color={theme.colors.error} />
             </View>
             <Text style={[styles.actionLabel, { color: Colors.text }]}>Sign out</Text>
@@ -155,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 12, fontWeight: "600",
     letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 10, marginTop: 4,
   },
-  listCard: { marginBottom: 20, padding: 0, overflow: "hidden" },
+  listCard: { marginBottom: 20, padding: 0, overflow: "hidden",gap:2 },
   infoRow: {
     flexDirection: "row", alignItems: "center", gap: 12,
     padding: 14, borderBottomWidth: 0.5,

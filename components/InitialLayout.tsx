@@ -1,5 +1,6 @@
 import { useTheme } from "@/providers/ThemeContextProvider";
 import { useAuth } from "@clerk/expo";
+import { useConvexAuth } from "convex/react";
 import {
   SplashScreen,
   Stack,
@@ -15,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 const InitialLayout = () => {
   const { isLoaded, isSignedIn } = useAuth();
   const { resolved, theme } = useTheme();
+  const { isAuthenticated } = useConvexAuth();
 
   const segments = useSegments();
   const router = useRouter();
@@ -25,9 +27,9 @@ const InitialLayout = () => {
 
     const isAuthScreen = segments[0] == "(auth)";
 
-    if (!isSignedIn && !isAuthScreen) router.replace("/(auth)/login");
-    else if (isSignedIn && isAuthScreen) router.replace("/(tabs)");
-  }, [segments, isLoaded, isSignedIn]);
+    if (!isSignedIn && !isAuthScreen && !isAuthenticated) router.replace("/(auth)/login");
+    else if (isSignedIn && isAuthScreen && isAuthenticated) router.replace("/(tabs)");
+  }, [segments, isLoaded, isSignedIn,isAuthenticated]);
 
   const onLayoutRootView = useCallback(async () => {
     if (isLoaded) await SplashScreen.hideAsync();

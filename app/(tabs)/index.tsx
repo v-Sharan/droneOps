@@ -3,7 +3,6 @@ import { Text, View } from "@/components/Themed";
 import { api } from "@/convex/_generated/api";
 import { useAnimatedTheme } from "@/hooks/useAnimateTheme";
 import { useTheme } from "@/providers/ThemeContextProvider";
-import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
@@ -18,12 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
 
-  const { user: Curr } = useUser();
-
-  const user = useQuery(
-    api.user.getUserByClerkId,
-    Curr ? { clerkId: Curr?.id } : "skip"
-  );
+  const user = useQuery(api.user.getCurrentUser);
 
   const department = useQuery(
     api.departments.getDepartmentById,
@@ -37,7 +31,7 @@ export default function HomeScreen() {
     user ? { userId: user._id, date: today } : "skip"
   );
 
-  const recentSheets = useQuery(api.worksheets.getByUser, user ? { id: user._id } : "skip");
+  const recentSheets = useQuery(api.worksheets.getByUser);
 
   const greeting = () => {
     const h = new Date().getHours();

@@ -46,7 +46,6 @@ export const getUserByClerkId = query({
 
 export const getAuthendicatedUser = async (ctx: QueryCtx | MutationCtx) => {
   const identity = await ctx.auth.getUserIdentity();
-  console.log("Authenticated user identity:", identity);
   if (!identity) throw new Error("Unauthorized");
 
   const currentUser = await ctx.db
@@ -58,6 +57,14 @@ export const getAuthendicatedUser = async (ctx: QueryCtx | MutationCtx) => {
 
   return currentUser;
 };
+
+export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getAuthendicatedUser(ctx);
+    return user;
+  },
+});
 
 export const updateProfile = mutation({
   args: {

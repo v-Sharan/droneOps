@@ -27,7 +27,7 @@ const Input = ({ label, error, containerStyle, isPassword, ...props }: InputProp
   const {theme} = useTheme();
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, containerStyle]} backgroundColor={colors.surface}>
       {label && <Text style={[styles.label,{color: colors.textSecondary}]}>{label}</Text>}
       <View style={[styles.inputWrap, { borderColor: error ? colors.error : colors.border, borderRadius: radii.md, backgroundColor: colors.surface }]}>
         <TextInput
